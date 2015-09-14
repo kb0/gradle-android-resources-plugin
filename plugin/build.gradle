@@ -22,11 +22,12 @@ apply plugin: 'com.jfrog.bintray'
 ext {
     myArtifactId = 'gradle-android-resources-plugin'
     myGroupId = 'com.kb.gradle'
-    myVersion = '1.0.4'
+    myVersion = '1.0.5'
 }
 
 group project.myGroupId
 version project.myVersion
+sourceCompatibility = 1.7
 
 test {
     systemProperty "imageMagickBinary", imageMagickBinary
