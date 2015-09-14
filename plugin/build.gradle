@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -7,42 +8,58 @@ buildscript {
     }
 }
 
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'com.jfrog.bintray'
 
-dependencies {
-    compile gradleApi()
+ext {
+    myArtifactId = 'gradle-android-resources-plugin'
+    myGroupId = 'com.kb.gradle'
+    myVersion = '1.0.1'
 }
 
-group = 'com.kb'
-version '1.0-SNAPSHOT'
+group project.myGroupId
+version project.myVersion
 
-ext {
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.6
-    artifactId = 'gradle-android-resources-plugin'
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            groupId project.myGroupId
+            artifactId project.myArtifactId
+            version project.myVersion
+        }
+    }
 }
 
 bintray {
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
     key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-
+    publications = ['MyPublication']
     pkg {
-        repo = 'generic'
+        repo = 'maven'
         name = 'gradle-android-resources-plugin'
         userOrg = 'kb0'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/kb0/gradle-android-resources-plugin.git'
 
         version {
-            name = '1.0-SNAPSHOT'
-            desc = 'Gradle Android Resources Plugin 1.0'
+            name = project.myVersion
+            desc = 'Gradle Android Resources Plugin ' + project.myVersion
             released  = new Date()
         }
     }
+}
 
-    configurations = ['archives']
 
-    //dryRun = true
-    //publish = false
+dependencies {
+    compile gradleApi()
+    testCompile 'junit:junit:[4,)'
 }
