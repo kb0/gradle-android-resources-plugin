@@ -18,12 +18,15 @@ class BuildDrawablesTaskTest {
     @Test
     public void canRunBuildDrawablesTaskToProject() {
         Project project = ProjectBuilder.builder().build()
+        project.getExtensions().create("androidResources", AndroidResourcesPluginExtension.class);
+
         project.ext.imageMagickBinary = System.properties.imageMagickBinary
+        project.extensions.getByName("androidResources").drawables = ["icon" : new File(System.properties.fixtures, "icon.svg").toString()];
 
         def task = project.task('buildDrawables', type: BuildDrawablesTask)
         Assert.assertTrue(task instanceof BuildDrawablesTask)
 
-        task.drawables = ["icon" : new File(System.properties.fixtures, "icon.svg").toString()];
+        // run task
         task.action();
     }
 }

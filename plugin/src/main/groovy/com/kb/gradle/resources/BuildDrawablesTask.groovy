@@ -5,8 +5,6 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 public class BuildDrawablesTask extends DefaultTask {
-    def drawables
-
     // Google Store assets
     Map<String, Integer> webAssets = new HashMap<String, Integer>() {
         {
@@ -60,9 +58,7 @@ public class BuildDrawablesTask extends DefaultTask {
         logger.info("use imageMagick at - " + imageMagickBinary);
 
         // get drawables list
-        if (drawables == null) {
-            def drawables = extension.getDrawables();
-        }
+        def drawables = extension.getDrawables();
         println "process drawables - $drawables"
 
         // @TODO iterate android flavours
