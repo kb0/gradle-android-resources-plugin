@@ -5,7 +5,6 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 
 public class BuildDrawablesTask extends DefaultTask {
-    @Input
     def drawables
 
     // Google Store assets
