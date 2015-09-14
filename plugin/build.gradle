@@ -22,7 +22,7 @@ apply plugin: 'com.jfrog.bintray'
 ext {
     myArtifactId = 'gradle-android-resources-plugin'
     myGroupId = 'com.kb.gradle'
-    myVersion = '1.0.3'
+    myVersion = '1.0.4'
 }
 
 group project.myGroupId
