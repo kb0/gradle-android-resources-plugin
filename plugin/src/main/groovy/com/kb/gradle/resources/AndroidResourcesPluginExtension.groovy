@@ -3,9 +3,17 @@ import org.gradle.api.Project
 
 public class AndroidResourcesPluginExtension {
 
-    def seed
+    def drawables
 
-    def getSeed() {
-        System.properties['seed'] ?: seed
+    def getDrawables() {
+        return drawables
+    }
+
+    def getImageMagickBinary(Project project) {
+        if (project.ext.has("imageMagickBinary")) {
+            return project.ext.imageMagickBinary
+        }
+
+        return "convert"
     }
 }

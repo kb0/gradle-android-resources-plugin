@@ -6,7 +6,7 @@ import org.gradle.api.tasks.StopExecutionException
 
 public class AndroidResourcesPlugin implements Plugin<Project> {
     void apply(Project project) {
-        if (!project.plugins.hasPlugin('android')) {
+        if (!project.plugins.hasPlugin('com.android.application') && !project.plugins.hasPlugin('com.android.library')) {
             throw new StopExecutionException("The 'android' plugin is required.")
         }
 

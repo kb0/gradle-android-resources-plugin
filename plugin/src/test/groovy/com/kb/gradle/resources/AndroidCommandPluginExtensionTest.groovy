@@ -1,8 +1,9 @@
 package com.kb.gradle.resources
 
 import org.gradle.api.Project
-import org.gradle.api.tasks.StopExecutionException
+import org.gradle.api.internal.plugins.PluginApplicationException
 import org.gradle.testfixtures.ProjectBuilder
+import org.junit.Assert
 import org.junit.Test
 
 class AndroidResourcesPluginExtensionTest {
@@ -13,27 +14,10 @@ class AndroidResourcesPluginExtensionTest {
         assert (extension instanceof AndroidResourcesPluginExtension)
     }
 
-    @Test
-    public void canAddBuildDrawablesTaskToProject() {
-        Project project = ProjectBuilder.builder().build()
-
-        def task = project.task('buildDrawables', type: BuildDrawablesTask)
-        assertTrue(task instanceof BuildDrawablesTask)
-    }
-
-    @Test
+    @Test(expected = PluginApplicationException.class)
     public void cannotApplyPluginToProjectWithoutAndroid() {
         Project project = ProjectBuilder.builder().build()
-
-        try {
-            project.pluginManager.apply('android-resources')
-            assert false
-        } catch (StopExecutionException ignored) {
-            assert true
-        }
-        //assertTrue(task instanceof BuildDrawablesTask)
+        project.pluginManager.apply('android-resources')
     }
-
-
 }
 

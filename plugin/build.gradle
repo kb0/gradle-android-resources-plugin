@@ -22,11 +22,16 @@ apply plugin: 'com.jfrog.bintray'
 ext {
     myArtifactId = 'gradle-android-resources-plugin'
     myGroupId = 'com.kb.gradle'
-    myVersion = '1.0.1'
+    myVersion = '1.0.2'
 }
 
 group project.myGroupId
 version project.myVersion
+
+test {
+    systemProperty "imageMagickBinary", imageMagickBinary
+    systemProperty "fixtures", new File(project.projectDir, "src/test/resources/");
+}
 
 publishing {
     publications {
@@ -61,5 +66,5 @@ bintray {
 
 dependencies {
     compile gradleApi()
-    testCompile 'junit:junit:[4,)'
+    testCompile 'junit:junit:[4.7,)'
 }
