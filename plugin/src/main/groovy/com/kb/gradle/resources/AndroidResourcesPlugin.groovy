@@ -11,6 +11,9 @@ public class AndroidResourcesPlugin implements Plugin<Project> {
         }
 
         project.getExtensions().create("androidResources", AndroidResourcesPluginExtension.class);
+        // create task for actionbar and launcher icons
+        project.getTasks().create("buildIcons", BuildIconsTask.class);
+        // create task for drawables
         project.getTasks().create("buildDrawables", BuildDrawablesTask.class);
     }
 }

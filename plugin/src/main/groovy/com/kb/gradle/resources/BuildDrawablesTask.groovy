@@ -1,50 +1,13 @@
-package com.kb.gradle.resources;
+package com.kb.gradle.resources
 
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskAction
 
-public class BuildDrawablesTask extends DefaultTask {
-    // Google Store assets
-    Map<String, Integer> webAssets = new HashMap<String, Integer>() {
-        {
-            put("web", 512);
-        }
-    };
-
-    // Launcher
-    String launcherPrefix = "ic_launcher_";
-    Map<String, Integer> launcherAssets = new LinkedHashMap<String, Integer>() {
-        {
-            put("xxxhdpi", 192);
-            put("xxhdpi", 144);
-            put("xhdpi", 96);
-            put("hdpi", 72);
-            put("mdpi", 48);
-        }
-    };
-
-    // Menu
-    String actionbarPrefix = "ic_actionbar_";
-    Map<String, Integer> actionbarAssets = new LinkedHashMap<String, Integer>() {
-        {
-            put("xxxhdpi", 160);
-            put("xxhdpi", 120);
-            put("xhdpi", 80);
-            put("hdpi", 60);
-            put("mdpi", 40);
-        }
-    };
-
-    Map<String, Double> dpiRation = new LinkedHashMap<String, Double>() {
-        {
-            put("xxxhdpi", 192.0 / 48.0);
-            put("xxhdpi", 144.0 / 48.0);
-            put("xhdpi", 96.0 / 48.0);
-            put("hdpi", 72.0 / 48.0);
-            put("mdpi", 48.0 / 48.0);
-        }
-    };
+/**
+ * Created by kb on 07.10.2015.
+ */
+class BuildDrawablesTask extends DefaultTask {
 
     @TaskAction
     public void action() {
@@ -63,39 +26,27 @@ public class BuildDrawablesTask extends DefaultTask {
 
         // @TODO iterate android flavours
         // @TODO get destination path from android project settings
-        def drawableTarget = getProject().getProjectDir().toString() + "\\src\\main\\res\\drawable-";
+        def drawableTarget = getProject().getProjectDir().toString() + "\\src\\main\\res\\drawable-mdpi\\";
+        drawables.each() { source, dimensions ->
+            dimensions.each() { dimension ->
+                // create destination directory
+                new File(drawableTarget).mkdirs();
 
+                def drawableName = FilenameUtils.getBaseName(source)
+                def drawableExtension = FilenameUtils.getExtension(source)
 
-        drawables.each() { iconName, iconSource ->
-            launcherAssets.each() { key, size ->
-                new File(drawableTarget + key).mkdirs();
-                def targetPath = drawableTarget + key + "\\" + launcherPrefix + iconName + ".png";
+                def targetPath = "$drawableTarget\\${drawableName}_${dimension}.$drawableExtension";
                 println "process $imageMagickBinary for $iconSource into $targetPath"
                 getProject().exec {
                     workingDir project.projectDir
                     executable imageMagickBinary
                     args(
-                            "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                            "-antialias", "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
+                            "${source}",
+                            "-antialias", "-resize", "${dimension[0]}x${dimension[1]}",
                             targetPath
                     )
                 }
 
-            };
-
-            actionbarAssets.each() { key, size ->
-                new File(drawableTarget + key).mkdirs();
-                def targetPath = drawableTarget + key + "\\" + actionbarPrefix + iconName + ".png";
-                println "process $imageMagickBinary for $iconSource into $targetPath"
-                getProject().exec {
-                    workingDir project.projectDir
-                    executable imageMagickBinary
-                    args(
-                            "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                            "-antialias", "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
-                            targetPath
-                    )
-                }
             };
         };
     }
