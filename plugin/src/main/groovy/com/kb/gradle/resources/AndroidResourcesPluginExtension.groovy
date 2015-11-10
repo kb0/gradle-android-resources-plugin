@@ -53,4 +53,10 @@ public class AndroidResourcesPluginExtension {
 
         return "convert"
     }
+
+    def translationMap
+    def String translationSource
+    def String translationTarget
+
+    def String translationDefaultLocale = "en";
 }

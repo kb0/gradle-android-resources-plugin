@@ -15,5 +15,8 @@ public class AndroidResourcesPlugin implements Plugin<Project> {
         project.getTasks().create("buildIcons", BuildIconsTask.class);
         // create task for drawables
         project.getTasks().create("buildDrawables", BuildDrawablesTask.class);
+
+        // create task translations
+        project.getTasks().create("extractStrings", ExtractStringsTask.class);
     }
 }
