@@ -132,9 +132,10 @@ public class ExtractStringsTask extends DefaultTask {
         }
 
         // copy default locale
-        FileUtils.copyFile(
-                new File(targetBase, "/values-" + extension.getTranslationDefaultLocale() + "/" + extension.getTranslationTarget()),
-                new File(targetBase, "/values/" + extension.getTranslationTarget())
-        );
+        File defaultTranslationSource = new File(targetBase, "/values-" + extension.getTranslationDefaultLocale() + "/" + extension.getTranslationTarget());
+        File defaultTranslationTarget = new File(targetBase, "/values/" + extension.getTranslationTarget())
+        if (defaultTranslationSource.exists()) {
+            FileUtils.copyFile(defaultTranslationSource, defaultTranslationTarget)
+        }
     }
 }
