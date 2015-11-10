@@ -20,4 +20,3 @@ class AndroidResourcesPluginExtensionTest {
         project.pluginManager.apply('android-resources')
     }
 }
-
