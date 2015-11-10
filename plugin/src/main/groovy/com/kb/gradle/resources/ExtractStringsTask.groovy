@@ -1,14 +1,17 @@
 package com.kb.gradle.resources
 
+import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.StopExecutionException
 import org.gradle.api.tasks.TaskAction;
 import groovy.xml.*;
 
 public class ExtractStringsTask extends DefaultTask {
 
-    def getXmlDocument = { File destinationXml ->
+    public GPathResult getXmlDocument(File destinationXml) {
         if (!destinationXml.exists()) {
+            println "create destination " + destinationXml
             destinationXml.getParentFile().mkdirs();
 
             def writer = new StringWriter()
@@ -32,7 +35,18 @@ public class ExtractStringsTask extends DefaultTask {
 
         // get strings list
         def stringsMap = extension.getTranslationMap();
+        if (stringsMap == null) {
+            throw new StopExecutionException("'translationMap' should be set.")
+        }
+
         def sourceBase = extension.getTranslationSource();
+        if (sourceBase == null) {
+            throw new StopExecutionException("Directory with translations (resources) should be set.")
+        }
+        if (!new File(sourceBase).isDirectory()) {
+            throw new StopExecutionException("Directory with translations (" + sourceBase + ") should exists.")
+        }
+
         def targetBase = new File(project.projectDir, "\\src\\main\\res")
 
         println "process strings - $stringsMap"
@@ -59,6 +73,8 @@ public class ExtractStringsTask extends DefaultTask {
 
                         // strip suffixes and create destination directory
                         def distDir = new File(targetBase, appResDir.getName().replaceAll("-(sw\\d+dp|v\\d+|land|xlarge|large|notouch)", ""))
+                        distDir.mkdirs();
+
                         // create destination xml
                         def distFile = new File(distDir, extension.getTranslationTarget())
 
@@ -68,15 +84,22 @@ public class ExtractStringsTask extends DefaultTask {
                         def xmlValuesUpdate = false
 
                         stringsMap.each { key, valueArray ->
+                            println "process string $key"
                             valueArray.any { value ->
+                                println "process source key $value"
+
                                 def sourceNode = xmlSource.string.find { it.@name == value }
                                 if (sourceNode != null && sourceNode.@name == value) {
                                     if (xmlValues == null) {
                                         xmlValues = getXmlDocument(distFile);
                                     }
 
-                                    def stringNode = xmlValues.string.find {
-                                        it.@name == key
+                                    def stringNode = null
+
+                                    if (xmlValues.string != null) {
+                                        stringNode = xmlValues.string.find {
+                                            it.@name == key
+                                        }
                                     }
 
                                     if (stringNode == null || stringNode.@name != key) {

@@ -56,7 +56,7 @@ public class AndroidResourcesPluginExtension {
 
     def translationMap
     def String translationSource
-    def String translationTarget
 
+    def String translationTarget = "strings_exported.xml";
     def String translationDefaultLocale = "en";
 }
