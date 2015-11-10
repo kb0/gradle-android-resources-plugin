@@ -3,8 +3,25 @@ package com.kb.gradle.resources
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction;
+import groovy.xml.*;
 
 public class ExtractStringsTask extends DefaultTask {
+
+    def getXmlDocument = { File destinationXml ->
+        if (!destinationXml.exists()) {
+            destinationXml.getParentFile().mkdirs();
+
+            def writer = new StringWriter()
+            def xml = new MarkupBuilder(writer)
+
+            xml.mkp.xmlDeclaration(version: "1.0", encoding: "utf-8")
+            xml.resources()
+
+            destinationXml << writer.toString()
+        }
+
+        return new XmlSlurper().parse(destinationXml)
+    }
 
     @TaskAction
     public void action() {
