@@ -41,7 +41,7 @@ class BuildDrawablesTask extends DefaultTask {
                     sources << it.absolutePath
                 }
             } else if (new File(sourcePath).isDirectory()) {
-                fileTree(sourcePath).each {
+                getProject().fileTree(sourcePath).each {
                     sources << it.absolutePath
                 }
             } else {
@@ -63,6 +63,7 @@ class BuildDrawablesTask extends DefaultTask {
                                 "-antialias", "-resize", "${dimension}",
                                 targetPath
                         )
+                        ignoreExitValue true
                     }
                 };
             }

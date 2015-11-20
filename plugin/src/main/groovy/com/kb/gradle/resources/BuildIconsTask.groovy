@@ -40,6 +40,7 @@ public class BuildIconsTask extends DefaultTask {
                             "-antialias", "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
                             targetPath
                     )
+                    ignoreExitValue true
                 }
 
             };
@@ -56,6 +57,7 @@ public class BuildIconsTask extends DefaultTask {
                             "-antialias", "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
                             targetPath
                     )
+                    ignoreExitValue true
                 }
             };
 
@@ -69,6 +71,7 @@ public class BuildIconsTask extends DefaultTask {
                         "-antialias", "-resize", "512x512", "-gravity", "center", "-extent", "512x512",
                         targetPath
                 )
+                ignoreExitValue true
             }
         };
     }
