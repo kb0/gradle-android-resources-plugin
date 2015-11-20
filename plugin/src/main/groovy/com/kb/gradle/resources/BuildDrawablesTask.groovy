@@ -2,6 +2,7 @@ package com.kb.gradle.resources
 
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -27,27 +28,36 @@ class BuildDrawablesTask extends DefaultTask {
         // @TODO iterate android flavours
         // @TODO get destination path from android project settings
         def drawableTarget = getProject().getProjectDir().toString() + "\\src\\main\\res\\drawable-mdpi\\";
-        drawables.each() { source, dimensions ->
-            dimensions.each() { dimension ->
-                // create destination directory
-                new File(drawableTarget).mkdirs();
+        new File(drawableTarget).mkdirs();
 
-                def drawableName = FilenameUtils.getBaseName(source)
-                def drawableExtension = FilenameUtils.getExtension(source)
-
-                def targetPath = "$drawableTarget\\${drawableName}_${dimension}.$drawableExtension";
-                println "process $imageMagickBinary for $iconSource into $targetPath"
-                getProject().exec {
-                    workingDir project.projectDir
-                    executable imageMagickBinary
-                    args(
-                            "${source}",
-                            "-antialias", "-resize", "${dimension[0]}x${dimension[1]}",
-                            targetPath
-                    )
+        drawables.each() { sourcePath, dimensions ->
+            def sources = new ArrayList<String>()
+            if (sourcePath instanceof FileTree) {
+                sourcePath.each {
+                    sources << it.absolutePath
                 }
+            } else {
+                sources << sourcePath
+            }
 
-            };
+            sources.each() { source ->
+                dimensions.each() { dimension ->
+                    def drawableName = FilenameUtils.getBaseName(source)
+                    def drawableExtension = FilenameUtils.getExtension(source)
+
+                    def targetPath = "$drawableTarget\\${drawableName}_${dimension}.$drawableExtension";
+                    println "process $imageMagickBinary for $iconSource into $targetPath"
+                    getProject().exec {
+                        workingDir project.projectDir
+                        executable imageMagickBinary
+                        args(
+                                "${source}",
+                                "-antialias", "-resize", "${dimension}",
+                                targetPath
+                        )
+                    }
+                };
+            }
         };
     }
 }
