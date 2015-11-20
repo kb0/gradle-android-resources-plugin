@@ -1,9 +1,13 @@
 package com.kb.gradle.resources
 
+import org.apache.commons.io.FileSystemUtils
+import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileTree
 import org.gradle.api.tasks.TaskAction
+
+import java.nio.file.Files
 
 /**
  * Created by kb on 07.10.2015.
@@ -36,6 +40,10 @@ class BuildDrawablesTask extends DefaultTask {
                 sourcePath.each {
                     sources << it.absolutePath
                 }
+            } else if (new File(sourcePath).isDirectory()) {
+                fileTree(sourcePath).each {
+                    sources << it.absolutePath
+                }
             } else {
                 sources << sourcePath
             }
@@ -46,7 +54,7 @@ class BuildDrawablesTask extends DefaultTask {
                     def drawableExtension = FilenameUtils.getExtension(source)
 
                     def targetPath = "$drawableTarget\\${drawableName}_${dimension}.$drawableExtension";
-                    println "process $imageMagickBinary for $iconSource into $targetPath"
+                    println "process $imageMagickBinary for $source into $targetPath"
                     getProject().exec {
                         workingDir project.projectDir
                         executable imageMagickBinary
