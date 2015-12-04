@@ -44,6 +44,8 @@ public class AndroidResourcesPluginExtension {
     };
 
     def icons
+    def iconsFilter
+
     def drawables
 
     def getImageMagickBinary(Project project) {

@@ -20,6 +20,12 @@ public class BuildIconsTask extends DefaultTask {
         def icons = extension.getIcons();
         println "process drawables - $icons"
 
+        // "Lanczos2"
+        def iconsFilter = extension.getIconsFilter();
+        if (iconsFilter == null && iconsFilter.isEmpty) {
+            iconsFilter = "Lanczos2"
+        }
+
         // @TODO iterate android flavours
         // @TODO get destination path from android project settings
         def drawableTarget = getProject().getProjectDir().toString() + "\\src\\main\\res\\drawable-";
@@ -37,7 +43,7 @@ public class BuildIconsTask extends DefaultTask {
                     executable imageMagickBinary
                     args(
                             "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                            "-antialias", "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
+                            "-antialias", "-filter", iconsFilter, "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
                             targetPath
                     )
                     ignoreExitValue true
@@ -54,7 +60,7 @@ public class BuildIconsTask extends DefaultTask {
                     executable imageMagickBinary
                     args(
                             "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                            "-antialias", "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
+                            "-antialias", "-filter", iconsFilter, "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
                             targetPath
                     )
                     ignoreExitValue true
@@ -68,7 +74,7 @@ public class BuildIconsTask extends DefaultTask {
                 executable imageMagickBinary
                 args(
                         "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                        "-antialias", "-resize", "512x512", "-gravity", "center", "-extent", "512x512",
+                        "-antialias", "-filter", iconsFilter, "-resize", "512x512", "-gravity", "center", "-extent", "512x512",
                         targetPath
                 )
                 ignoreExitValue true

@@ -29,12 +29,7 @@ class BuildDrawablesTask extends DefaultTask {
         def drawables = extension.getDrawables();
         println "process drawables - $drawables"
 
-        // @TODO iterate android flavours
-        // @TODO get destination path from android project settings
-        def drawableTarget = getProject().getProjectDir().toString() + "\\src\\main\\res\\drawable-mdpi\\";
-        new File(drawableTarget).mkdirs();
-
-        drawables.each() { sourcePath, dimensions ->
+        drawables.each() { sourcePath, settings ->
             def sources = new ArrayList<String>()
             if (sourcePath instanceof FileTree) {
                 sourcePath.each {
@@ -48,24 +43,48 @@ class BuildDrawablesTask extends DefaultTask {
                 sources << sourcePath
             }
 
-            sources.each() { source ->
-                dimensions.each() { dimension ->
-                    def drawableName = FilenameUtils.getBaseName(source)
-                    def drawableExtension = FilenameUtils.getExtension(source)
+            Map imSettings = [:];
+            if (settings instanceof Map) {
+                imSettings = settings;
+            } else {
+                imSettings = ["dimension": settings];
+            }
 
-                    def targetPath = "$drawableTarget\\${drawableName}_${dimension}.$drawableExtension";
-                    println "process $imageMagickBinary for $source into $targetPath"
-                    getProject().exec {
-                        workingDir project.projectDir
-                        executable imageMagickBinary
-                        args(
-                                "${source}",
-                                "-antialias", "-resize", "${dimension}",
-                                targetPath
-                        )
-                        ignoreExitValue true
-                    }
-                };
+            // @TODO iterate android flavours
+            // @TODO get destination path from android project settings
+            def drawableTarget = new File(getProject().getProjectDir().toString(), "\\src\\main\\res\\drawable-mdpi\\");
+            if (imSettings.containsKey("target")) {
+                drawableTarget = new File(getProject().getProjectDir().toString(), "\\src\\main\\res\\" + imSettings["target"] + "\\");
+            }
+            drawableTarget.mkdirs();
+
+            sources.each() { source ->
+                def dimension = imSettings["dimension"];
+                def drawableName = FilenameUtils.getBaseName(source)
+                def drawableExtension = imSettings.containsKey("extension") ? imSettings["extension"] : FilenameUtils.getExtension(source);
+
+                def targetPath = new File(drawableTarget, "${drawableName}_${dimension}.$drawableExtension");
+
+                List imArgs = [source, "-antialias", "-resize", dimension, targetPath.getAbsolutePath()];
+                if (imSettings.containsKey("args") && imSettings["args"] instanceof List) {
+                    imArgs.clear();
+                    // add custom settings
+                    imArgs.addAll((List) imSettings["args"]);
+                    // add source
+                    imArgs.add(0, source);
+                    // add target
+                    imArgs.add(targetPath.getAbsolutePath());
+                }
+
+                println "process $imageMagickBinary for $source into $targetPath"
+                println imArgs
+                getProject().exec {
+                    workingDir project.projectDir
+                    executable imageMagickBinary
+                    args imArgs
+                    ignoreExitValue true
+                }
+
             }
         };
     }
