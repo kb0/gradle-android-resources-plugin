@@ -9,42 +9,32 @@ public class AndroidResourcesPluginExtension {
         }
     };
 
+    def List<String> densities = ["mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"];
+
+
     // Launcher
     String launcherPrefix = "ic_launcher_";
-    def Map<String, Integer> launcherAssets = new LinkedHashMap<String, Integer>() {
-        {
-            put("xxxhdpi", 192);
-            put("xxhdpi", 144);
-            put("xhdpi", 96);
-            put("hdpi", 72);
-            put("mdpi", 48);
-        }
-    };
+    int launcherIcon = 48;
+    int launcherIconBorder = 1;
 
-    // Menu
-    String actionbarPrefix = "ic_actionbar_";
-    def Map<String, Integer> actionbarAssets = new LinkedHashMap<String, Integer>() {
-        {
-            put("xxxhdpi", 160);
-            put("xxhdpi", 120);
-            put("xhdpi", 80);
-            put("hdpi", 60);
-            put("mdpi", 40);
-        }
-    };
+    // Navigation
+    String navPrefix = "ic_nav_";
+    int navIcon = 24;
+
 
     def Map<String, Double> dpiRation = new LinkedHashMap<String, Double>() {
         {
-            put("xxxhdpi", 192.0 / 48.0);
-            put("xxhdpi", 144.0 / 48.0);
-            put("xhdpi", 96.0 / 48.0);
-            put("hdpi", 72.0 / 48.0);
-            put("mdpi", 48.0 / 48.0);
+            put("xxxhdpi", 4.0);
+            put("xxhdpi", 3.0);
+            put("xhdpi", 2.0);
+            put("hdpi", 1.5);
+            put("mdpi", 1.0);
         }
     };
 
     def icons
     def iconsFilter
+    def iconsResize
 
     def drawables
 

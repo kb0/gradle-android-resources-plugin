@@ -20,10 +20,16 @@ public class BuildIconsTask extends DefaultTask {
         def icons = extension.getIcons();
         println "process drawables - $icons"
 
-        // "Lanczos2"
+        // default filter
         def iconsFilter = extension.getIconsFilter();
-        if (iconsFilter == null && iconsFilter.isEmpty) {
+        if (iconsFilter == null || iconsFilter.isEmpty()) {
             iconsFilter = "Lanczos2"
+        }
+
+        // default resize
+		def iconsResize = extension.getIconsResize();
+        if (iconsResize == null || iconsResize.isEmpty()) {
+            iconsResize = "-resize"
         }
 
         // @TODO iterate android flavours
@@ -34,16 +40,19 @@ public class BuildIconsTask extends DefaultTask {
         icons.each() { iconName, iconSource ->
             def iconSourceFile = new File(iconSource)
 
-            extension.getLauncherAssets().each() { key, size ->
-                new File(drawableTarget + key).mkdirs();
-                def targetPath = "$drawableTarget$key\\${extension.getLauncherPrefix()}$iconName" + ".png";
+            extension.getDensities().each() { density ->
+                new File(drawableTarget + density).mkdirs();
+                def targetPath = "$drawableTarget$density\\${extension.getLauncherPrefix()}$iconName" + ".png";
+                Integer targetSize = Math.round(extension.getDpiRation().get(density) * (extension.getLauncherIcon() - extension.getLauncherIconBorder()))
+                Integer borderSize = Math.round(extension.getDpiRation().get(density) * extension.getLauncherIcon())
+
                 println "process $imageMagickBinary for $iconSource into $targetPath"
                 getProject().exec {
                     workingDir project.projectDir
                     executable imageMagickBinary
                     args(
                             "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                            "-antialias", "-filter", iconsFilter, "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
+                            "-antialias", "-filter", iconsFilter, iconsResize, "${targetSize}x${targetSize}", "-gravity", "center", "-extent", "${borderSize}x${borderSize}",
                             targetPath
                     )
                     ignoreExitValue true
@@ -51,16 +60,18 @@ public class BuildIconsTask extends DefaultTask {
 
             };
 
-            extension.getActionbarAssets().each() { key, size ->
-                new File(drawableTarget + key).mkdirs();
-                def targetPath = "$drawableTarget$key\\${extension.getActionbarPrefix()}$iconName" + ".png";
+            extension.getDensities().each() { density ->
+                new File(drawableTarget + density).mkdirs();
+                def targetPath = "$drawableTarget$density\\${extension.getNavPrefix()}$iconName" + ".png";
+                Integer targetSize = Math.round(extension.getDpiRation().get(density) * extension.getNavIcon())
+
                 println "process $imageMagickBinary for $iconSource into $targetPath"
                 getProject().exec {
                     workingDir project.projectDir
                     executable imageMagickBinary
                     args(
                             "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                            "-antialias", "-filter", iconsFilter, "-resize", "${size}x${size}", "-gravity", "center", "-extent", "${size}x${size}",
+                            "-antialias", "-filter", iconsFilter, iconsResize, "${targetSize}x${targetSize}", "-gravity", "center", "-extent", "${targetSize}x${targetSize}",
                             targetPath
                     )
                     ignoreExitValue true
@@ -74,7 +85,7 @@ public class BuildIconsTask extends DefaultTask {
                 executable imageMagickBinary
                 args(
                         "-background", "transparent", "${iconSource}", "-strip", "-trim", "+repage",
-                        "-antialias", "-filter", iconsFilter, "-resize", "512x512", "-gravity", "center", "-extent", "512x512",
+                        "-antialias", "-filter", iconsFilter, iconsResize, "512x512", "-gravity", "center", "-extent", "512x512",
                         targetPath
                 )
                 ignoreExitValue true
