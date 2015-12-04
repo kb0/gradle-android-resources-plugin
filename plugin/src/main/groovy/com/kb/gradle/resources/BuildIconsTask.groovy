@@ -43,7 +43,7 @@ public class BuildIconsTask extends DefaultTask {
             extension.getDensities().each() { density ->
                 new File(drawableTarget + density).mkdirs();
                 def targetPath = "$drawableTarget$density\\${extension.getLauncherPrefix()}$iconName" + ".png";
-                Integer targetSize = Math.round(extension.getDpiRation().get(density) * (extension.getLauncherIcon() - extension.getLauncherIconBorder()))
+                Integer targetSize = Math.round(extension.getDpiRation().get(density) * (extension.getLauncherIcon() - extension.getLauncherIconBorder() * 2))
                 Integer borderSize = Math.round(extension.getDpiRation().get(density) * extension.getLauncherIcon())
 
                 println "process $imageMagickBinary for $iconSource into $targetPath"
