@@ -23,6 +23,9 @@ class BuildDrawablesTask extends DefaultTask {
 
         // check ImageMagick binary
         def imageMagickBinary = extension.getImageMagickBinary(project);
+        def pngquantBinary = extension.getPngquantBinary(project);
+        def jpgoptimBinary = extension.getJpgoptimBinary(project);
+
         logger.info("use imageMagick at - " + imageMagickBinary);
 
         // get drawables list
@@ -60,8 +63,9 @@ class BuildDrawablesTask extends DefaultTask {
 
             sources.each() { source ->
                 def dimension = imSettings["dimension"];
-                def drawableName = FilenameUtils.getBaseName(source)
-                def drawableExtension = imSettings.containsKey("extension") ? imSettings["extension"] : FilenameUtils.getExtension(source);
+                String drawableName = FilenameUtils.getBaseName(source)
+                String drawableExtension = imSettings.containsKey("extension") ? imSettings["extension"] : FilenameUtils.getExtension(source);
+                String drawableFormat = imSettings.containsKey("format") ? imSettings["format"] + ":" : "";
 
                 def targetPath = new File(drawableTarget, "${drawableName}_${dimension}.$drawableExtension");
 
@@ -73,7 +77,7 @@ class BuildDrawablesTask extends DefaultTask {
                     // add source
                     imArgs.add(0, source);
                     // add target
-                    imArgs.add(targetPath.getAbsolutePath());
+                    imArgs.add(drawableFormat + targetPath.getAbsolutePath());
                 }
 
                 println "process $imageMagickBinary for $source into $targetPath"
@@ -85,6 +89,26 @@ class BuildDrawablesTask extends DefaultTask {
                     ignoreExitValue true
                 }
 
+                if (imSettings.containsKey("optimize") && imSettings["optimize"]) {
+                    if ("png".equals(drawableExtension.toLowerCase())) {
+                        println "optimize $targetPath with pngquant"
+                        getProject().exec {
+                            workingDir project.projectDir
+                            executable pngquantBinary
+                            args "--force", "--verbose", "--ordered", "--speed=1", "--quality=25-90", "--ext", ".png", targetPath.getAbsolutePath()
+                            ignoreExitValue true
+                        }
+                    }
+                    if ("jpg".equals(drawableExtension.toLowerCase())) {
+                        println "optimize $targetPath with jpgoptim"
+                        getProject().exec {
+                            workingDir project.projectDir
+                            executable jpgoptimBinary
+                            args "--strip-all", "-o", "-f", "-v", targetPath.getAbsolutePath()
+                            ignoreExitValue true
+                        }
+                    }
+                }
             }
         };
     }

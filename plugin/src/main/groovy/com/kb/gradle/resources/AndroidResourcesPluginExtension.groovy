@@ -38,12 +38,28 @@ public class AndroidResourcesPluginExtension {
 
     def drawables
 
-    def getImageMagickBinary(Project project) {
+    static String getImageMagickBinary(Project project) {
         if (project.ext.has("imageMagickBinary")) {
             return project.ext.imageMagickBinary
         }
 
         return "convert"
+    }
+
+    static String getPngquantBinary(Project project) {
+        if (project.ext.has("pngquantBinary")) {
+            return project.ext.pngquantBinary
+        }
+
+        return "pngquant"
+    }
+
+    static String getJpgoptimBinary(Project project) {
+        if (project.ext.has("jpgoptim")) {
+            return project.ext.jpgoptim
+        }
+
+        return "jpgoptim"
     }
 
     def translationMap
